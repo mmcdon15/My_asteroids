@@ -5,6 +5,7 @@ from shot import *
 
 class Player(CircleShape):
     shot_groups=pygame.sprite.Group()
+    
     def __init__(self, x, y,shot_group):
         super().__init__(x,y,PLAYER_RADIUS)
         self.rotation=0
@@ -12,6 +13,8 @@ class Player(CircleShape):
         for group in getattr(Player, "containers", ()):
             group.add(self)
         self.shot_groups=shot_group
+        self.shot_timer=0
+
     # in the player class
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -38,6 +41,7 @@ class Player(CircleShape):
         self.shot_groups.add(shot)
         shot.velocity = pygame.Vector2(0,1).rotate(self.rotation)
         shot.velocity*=PLAYER_SHOOT_SPEED
+        self.shot_timer=PLAYER_SHOOT_COOLDOWN
     
     def update(self, dt):
         keys = pygame.key.get_pressed()
@@ -51,4 +55,6 @@ class Player(CircleShape):
         if keys[pygame.K_s]:
             self.move(-dt)
         if keys[pygame.K_SPACE]:
+           if self.shot_timer<=0:
             self.shoot()
+        self.shot_timer-=dt
